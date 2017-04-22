@@ -109,4 +109,50 @@ public class JsonDelimiterTest {
 
     }
 
+
+    @Test
+    public void testMultiplePartials() {
+        String string1 = "{\"name\": { \"fist name\": \"John\", \"map\": {}, \"last name\": \"Doe\"}}";
+        String string21 = "{\"name\": { \"fist name\":";
+        String string22 = "\"Jon\", \"map\": {}, \"last name\": \"Doe\"}}";
+        String string31 = "{\"name\": { ";
+        String string32 = "\"fist name\": \"Carl\", \"map\": {}, \"last name\": \"Doe\"}}";
+        String string41 = "{\"name\": { \"fist name\": \"Ted\",";
+        String string42 = "\"map\": {}, \"last name\": \"Doe\"}}";
+
+        JsonDelimiter delimiter = new JsonDelimiter();
+        delimiter.add(string1.toCharArray(), string1.toCharArray().length);
+
+        delimiter.add(string21.toCharArray(), string21.toCharArray().length);
+
+        String json = delimiter.split();
+        assertNotNull(json);
+        assertTrue(json.compareTo(string1) == 0);
+
+        json = delimiter.split();
+        assertTrue(json == null);
+
+        delimiter.add(string22.toCharArray(), string22.toCharArray().length);
+        json = delimiter.split();
+        assertNotNull(json);
+        assertTrue(json.compareTo(string21 + string22) == 0);
+
+        delimiter.add(string31.toCharArray(), string31.toCharArray().length);
+        json = delimiter.split();
+        assertTrue(json == null);
+        delimiter.add(string32.toCharArray(), string32.toCharArray().length);
+        json = delimiter.split();
+        assertNotNull(json);
+        assertTrue(json.compareTo(string31 + string32) == 0);
+
+        delimiter.add(string41.toCharArray(), string41.toCharArray().length);
+        json = delimiter.split();
+        assertTrue(json == null);
+        delimiter.add(string42.toCharArray(), string42.toCharArray().length);
+        json = delimiter.split();
+        assertNotNull(json);
+        assertTrue(json.compareTo(string41 + string42) == 0);
+
+    }
+
 }
